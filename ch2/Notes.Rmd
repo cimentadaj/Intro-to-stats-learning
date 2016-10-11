@@ -50,3 +50,36 @@ They call this the _course of dimensionality_.
 
 Whenever you enocunter a problem such as this one, they briefly touch on a couple of methods which are better suited like thin-plate-spline.  The problem is that regression-type of methods tend to be less flexible but easier to interprete. Thin-plate-spline methods are extremely flexible, up to the point of fitting the data closely to the correct function, but are nearly impossible to interpret. This topic would be touched in the next chapters.
 
+Flexible means that can fit the data better and better:
+
+```{r}
+set.seed(2131)
+x <- rnorm(100)
+y <- rnorm(100) + x^3
+qplot(x, y, geom = "point") + geom_abline(colour = "red") +  geom_smooth(colour = "brown", span = 0.05, se = F) + geom_smooth(stat = "smooth", se = F)
+```
+Here you can see the flexibility of different models. Starting with the red regression slope, which fits the data not so good, followed by a smoothed line which fits the pattern reasonably well, and finally the smoothed line with a small span which practically touches upon almost all dots.
+
+As I still don't know how to compute it, if we estimated the MSE for each of these models, the MSE of the linear regression would be the highest, the middle smooth would be the best and the flexible smooth line would be smallest. However, overfitting the model is also negative for accuracy. As they show in the session, one should pick another chunk of the data and fit the flexible smooth and you'll see how the MSE increases.
+
+In a scenarion like this one:
+```{r, echo = F}
+set.seed(2131)
+x <- rnorm(100)
+y <- x + rnorm(100, sd = 0.1)
+qplot(x, y, geom = "point") + geom_abline(colour = "red") + geom_smooth(se = F) + geom_smooth(colour = "brown", span = 0.05, se = F)
+
+```
+In an scenario like this one, the flexibility is actually not necessary, as the data does not require more flexibility than the regression estimations. The MSE of the regression and the second model are virtually the same, with the last method being not that efficient. In this example the flexibility-accuracy trade off is not present, as the simplest model is flexible enough to get the best predictions.
+
+```{r, echo = F}
+set.seed(21311)
+x <- rnorm(100)
+y <- x^2 + rnorm(100, sd = 0.3)
+qplot(x, y, geom = "point") + geom_abline(colour = "red") + geom_smooth(se = F) + geom_smooth(colour = "brown", se = F, span = 0.05)
+```
+In this scenarion, although not perfectly depicted, the MSE of the flexible model is better than the linear model, even when applying the model in a subset of the training data.
+
+
+
+
