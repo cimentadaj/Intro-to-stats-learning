@@ -1,16 +1,52 @@
 ---
-title: "R Notebook"
+title: "Notes on chapter 2 - Introduction to Statistical Learning"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+The session started out introducing simple linear regression. It touched on what dependent/target/response variables are and what explanatory variables. They didn't go deep into the math but they did explain something which was interesting to me. They showed a scatterplot like this one:
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+```{r, echo = F}
+set.seed(1)
+x <- log(rnorm(1000, 5))
+y <- rnorm(1000, 5) * x
 
-```{r}
-plot(cars)
+qplot(x, y, geom = "point") + geom_smooth()
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+Where there's a linear relationship between x and y.  Actually, y is a function of x. If we wanted to predict the value of Y at any given x value we would simply look at the value in the regression slope. So for example, 
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+```{r, echo = F}
+set.seed(1)
+x <- log(rnorm(1000, 5))
+y <- rnorm(1000, 5) * x
+
+qplot(x, y, geom = "point") + geom_smooth() + geom_vline(xintercept = 1.0, colour = "red") + geom_hline(yintercept = 5, colour = "black") + scale_y_continuous(breaks = 2:18)
+```
+
+To obtain the mean Y when X is equal to 1.0, the regression slope estimates the mean for all values positioned in 1.0. Which gives us a 5. But what happens when there are no values in the X variable? Like for example in this part of the regression slope: 
+```{r, echo = F}
+set.seed(1)
+x <- log(rnorm(1000, 5))
+y <- rnorm(1000, 5) * x
+
+qplot(x, y, geom = "point") + geom_smooth() + geom_vline(xintercept = 0.8, colour = "red") + geom_hline(yintercept = 4, colour = "black") + scale_y_continuous(breaks = 2:18) + scale_x_continuous(breaks = 0.8:3)
+```
+
+In a case like this one, Trevor Hastie explains that the regression slope relaxes the mean estimation and estimates a 'nearest neighbor mean'. In simple terms, the mean is calculated within a certain boundarie, including as a minimum 10% of the data points in x.
+
+```{r, echo = F}
+set.seed(1)
+x <- log(rnorm(1000, 5))
+y <- rnorm(1000, 5) * x
+
+qplot(x, y, geom = "point") + geom_smooth() + geom_vline(xintercept = 0.75, colour = "red", linetype = "dashed") + geom_vline(xintercept = 0.95, colour = "red", linetype = "dashed") + scale_y_continuous(breaks = 2:18) + scale_x_continuous(breaks = 0.8:3)
+```
+
+As Trevor explains in the second lecture, nearest neighbor works fine when you have one, or maximum two covariates, simply because the distance between points is small. Once you include more covariates, the graph adds more dimensions for each covariate. This procedure throws in more distance for each dot as they're being relocated with the new values of new covariates. The problem is that the two red lines from above become wider and wider, as they need to cover 10% of the data points. This throws in biased estimations for prediction. Secondly, whenever you have a few data points in the data set, you'll have another bias problem, as the dotted red lines will have to be wider and wider apart until they can cover 10% of the data.
+
+To sum up, neareast neighbor works good when you have reasonable number of data points( I suppose this is arbitrary and should be expected upon) and when you have only 1 or 2 covariates.
+
+They call this the _course of dimensionality_.
+
+Whenever you enocunter a problem such as this one, they briefly touch on a couple of methods which are better suited like thin-plate-spline.  The problem is that regression-type of methods tend to be less flexible but easier to interprete. Thin-plate-spline methods are extremely flexible, up to the point of fitting the data closely to the correct function, but are nearly impossible to interpret. This topic would be touched in the next chapters.
+
