@@ -218,6 +218,21 @@ Boston[Boston$medv == min(Boston$medv), ]
 Actually, both suburb 399 and 406 have the same lowest media value, which is 5.
 
 First, both suburs have virtually the same values for all predictors except for the `crim`, `lstat` and `black`.
+The `crim` variable is quite different with the second suburb having a really high crime rate compared to the maximum crime rate of 88% which is only happening in one suburb. The proportion of residential land zoned for lots over 25k sq.ft is 0 for both suburs, and the maximum is 100%. So virtually no land zoned for lots in those suburbs. The indus variable is reasonably high with 18% and the minimum is 0, while the maximum is 27%. Both suburbs are not close to the Charles River and have high nitrogen oxide concentration at about 69% with the maximum being 87% and the minimum 38%.
+
+Their number of rooms per dwelling is about average with 5.4/5.6 while the min is 3 and the max 9. Both suburbs are completely occupied by units built prior to 1940 and are reasonably close to five Boston employment centres(1.4 when the minimum is 1 and the highest 12.) Also both are at the maximum index of accesibility to radial highways, and that's reasonably high as the minimum is 1 and they're at 24. The pupil-teacher ratio is 20.2 and the minimum is 12. As expected, both suburbs are highly populated by blacks, with one of the suburbs actually being the maximum number of the distribution. The lower status of the population is not unusually high, with the maximum and minimum being 37.9 and 1.73 and both suburbs are 30.5 and 22.9.
 
 
 (h) In this data set, how many of the suburbs average more than seven rooms per dwelling? More than eight rooms per dwelling? Comment on the suburbs that average more than eight rooms per dwelling.
+
+```{r}
+table(Boston$rm > 7)
+table(Boston$rm > 8)
+```
+Only 64 suburbs average above seven rooms, and only 13 average above eight rooms.
+
+```{r}
+head(Boston[Boston$rm > 8, ])
+```
+
+There are some outliers in these suburbs but they all have high age values, so a lot of owner occupied units prior to 1940. Also, all have high black density within their towns. All are far from the Charles River dummy except suburb 164, and the proportion of residential land zone for lots over 25,000 sq.ft is zero with the exception of suburb 205.
