@@ -80,6 +80,6 @@ qplot(x, y, geom = "point") + geom_abline(colour = "red") + geom_smooth(se = F) 
 ```
 In this scenario, although not perfectly depicted, the MSE of the flexible model is better than the linear model, even when applying the model in a subset of the training data.
 
-
+Classification problems.
 
 
