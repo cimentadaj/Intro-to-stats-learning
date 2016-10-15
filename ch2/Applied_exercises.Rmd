@@ -116,8 +116,108 @@ lapply(Auto[-(10:85), -ncol(Auto)], basic)
 
 (e) Using the full data set, investigate the predictors graphically, using scatterplots or other tools of your choice. Create some plots highlighting the relationships among the predictors. Comment on your findings.
 ```{r}
+plot(Auto[1:ncol(Auto) - 1])
+```
+It's interesting to look the mpg is negatively related to displacement, horsepower and weight in a similar fashion. In fact, the correlation are:
+```{r}
+correlations <- c(first = cor(Auto$mpg, Auto$displacement), second = cor(Auto$mpg, Auto$horsepower), third = cor(Auto$mpg, Auto$weight))
+correlations
+```
+All within a 5 figure difference. and above -0.70. In contrast, the correlations between displacement, horsepower and weight are strong and positive.
 
+```{r}
+
+correlations2 <- c(displa_horse = cor(Auto$displacement, Auto$horsepower), displace_weight = cor(Auto$displacement, Auto$weight), horsep_weight = cor(Auto$horsepower, Auto$weight))
+
+correlations2
+```
+
+```{r phenotype, fig.height=10, fig.width=1}
+plot(Auto$displacement, Auto$horsepower)
+plot(Auto$displacement, Auto$weight)
+plot(Auto$horsepower, Auto$weight)
 ```
 
 (f) Suppose that we wish to predict gas mileage (mpg) on the basis of the other variables. Do your plots suggest that any of the other variables might be useful in predicting mpg? Justify your answer.
 
+Yeah, just as we saw in the matrix scatterplot, mpg is highly correlated with several variables. Not only visually, but the correlation coefficients are substantial.
+
+10. 
+(a) To begin, load in the Boston data set.
+```{r}
+library(MASS)
+head(Boston)
+```
+
+How many rows are in this data set? How many columns? What do the rows and columns represent?
+
+```{r}
+dim(Boston)
+```
+The data has 506 rows and 14 columns. Each row represents housing values in suburbs from Boston. See `help(Boston)`.
+
+(b) Make some pairwise scatterplots of the predictors (columns) in this data set. Describe your findings.
+```{r, fig.width=7, fig.height=7}
+plot(Boston)
+```
+Well, besides the array of correlations that you can find in the scatterplot, I find interesting that there's some clear non-linear patterns such as in `nox ~ dis` as well as `Istat ~ medv` and `rm ~ Istat`.
+
+(c) Are any of the predictors associated with per capita crime rate? If so, explain the relationship.
+
+`crim` is correlated with `age`, `div`, `lstat` and `medv`. The relationships are not straightforward though.
+
+```{r}
+for (i in c("age", "dis", "lstat", "medv")) {
+plot(Boston[, i], Boston[,"crim"], xlab = paste(i))
+}
+```
+As the proportion of owner-occupied units buitl prior to 1940 increases, crime rates increase. But note that there's threshold effects. At around 40% crime rates start to increase and only around 80% it becomes substantial. This relationship might not be that strong linearly, but more non-linear.
+
+With dis (distance to five Boston employment centres), crime rates are higher only when employment centers are close, but as it passes increases over 4, crime rates set at 0.
+
+With `lstat` it's similar as with `age`, crime rates increases only after some value, more or less around 15. It seems that crime rates are not linearly related to almost any variable; it's mostly non-linearly related. Same pattern with `medv`
+
+(d) Do any of the suburbs of Boston appear to have particularly high crime rates? Tax rates? Pupil-teacher ratios? Comment on the range of each predictor.
+```{r}
+library(car)
+Boxplot(Boston$crim)
+```
+Above the graph we can see the outliers which have significantly higher crime rates than the overall distribution. 10 suburbs, so not specifically a small bunch.
+```{r}
+Boxplot(Boston$ptratio)
+Boxplot(Boston$tax)
+```
+`ptratio` does have some outliers, but they're not the same ones as with crime rates. Surprisingly, `tax` doesn`t have any outliers, and the distribution is pretty smooth.
+
+```{r}
+
+for (i in c("crim", "ptratio", "tax")) {
+  print(range(Boston[, i]))
+}
+```
+The range of crime rates can be as high as 88% and as low as 0%, quite some diversity between suburbs. Student-teacher ratio is much smaller, with a maximum of 22 students and a minimum of 13. Tax ranges from 187 to 711.
+
+(e) How many of the suburbs in this data set bound the Charles river?
+
+```{r}
+table(Boston$chas)
+```
+35 suburs.
+
+(f) What is the median pupil-teacher ratio among the towns in this data set?
+```{r}
+median(Boston$ptratio)
+```
+19 pupils per teacher.
+
+(g) Which suburb of Boston has lowest median value of owner- occupied homes? What are the values of the other predictors for that suburb, and how do those values compare to the overall ranges for those predictors? Comment on your findings.
+
+```{r}
+Boston[Boston$medv == min(Boston$medv), ]
+```
+Actually, both suburb 399 and 406 have the same lowest media value, which is 5.
+
+First, both suburs have virtually the same values for all predictors except for the `crim`, `lstat` and `black`.
+
+
+(h) In this data set, how many of the suburbs average more than seven rooms per dwelling? More than eight rooms per dwelling? Comment on the suburbs that average more than eight rooms per dwelling.
