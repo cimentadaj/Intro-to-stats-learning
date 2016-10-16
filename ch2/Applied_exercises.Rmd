@@ -2,6 +2,58 @@
 title: "R Notebook"
 output: html_notebook
 ---
+# Conceptual exercises
+
+1. 
+
+(a). 
+
+(b).
+
+(c).
+
+(d).
+
+2.
+
+(a). Regression problem, inference and n = 500 and p = 4.
+(b). Classification problem, prediction and n = 20 and p = 14.
+(c). Regression problem, prediction and n = 52 and p = 4.
+
+3.
+(a). 
+
+4.
+(a). 
+Fist, understanding whether economic conditions in a region trigger customers to buy in the morning or in the afternoon.
+This is a classification problem, as we are trying to inference whether certain economic conditions influence if a person
+will land in the morning or afternoon category. The predictors can be regional GDP, % of offshore industries, % change in economic growth from last year, for example. This example is an inference problem as we're more interested in understanding the relationships rather than predict specific customers.
+
+Second, predicting whether a student will dropout of school or not. Using several predictors ranging from economic situation at the household, past test scores, health and behavioral indicators, we are interested in predicting if the student will drop out or not. In this example we are much more interested in understanding if a specific student will drop out or not, so this makes it a prediction problem.
+
+Third, predicting whether a state from the United States will have a democratic or republic majority in the elections. In this example we are trying to _predict_ (and not infere) which states will have which political party. Using predictors such as the % of citizens who say will vote for the political party, which political party is currently the majority in the state, among others, we want to predict which will win.
+
+(b).
+First, predicting salaries. This is a regression problem given that the response variable is quantitative. This scenario can be either inference or predicton but considering that predicting salaries carries a great deal of uncertainty, we will make it an inference problem. So, we are interested in figuring out which specific factors affect salaries and under which conditions. The predictors are the type of job, whether public or private employee, if has children, age and education.
+
+Second, predicting the electoral turnout of the 2016 American elections. This is a prediction problem as we are interested in knowing which nominee will win with how many votes. Predictors such as incumbent party, state-level variables like % democrats and republicans and media information on positive/negative perception of each candidate can help predict who will win and by what margin.
+
+Third, predicting sales on a new product based on other products. We are interested in predicting the sales based on a line of products which are very similar, and using information such as the first batch of products produced, the cost of production, units sold, the estimated size of the market and price of the product, we can predict the initial sales of the new product.
+
+(c).
+
+Cluster analysis ia really useful for classifying units but without an explicit response variable. The applications are endless. One can be grouping customers of a brand based on specific characteristics of the user. This will help analysts understand which characteristics define which group and furthermore can help determine _possible_ categories and apply classification methods such as a logistic or multinomial regressions. One can imagina a lot of applications considering that if you have several characteristics/predictors/variables you can use clustering. Another example is classifying students based on classroom and family characteristics. So you can classify two broad categories: performance and learning milieu. Finally, another example is to classify football player based on several characteristics of their game play. One can end up with profiles like fast runners, goal makers, passive players and so on.
+
+5.
+
+6.
+
+7.
+```{r}
+x1 <- c(-1, 0 ,1)
+x2 <- c(0, 0 ,0)
+dist(cbind(x1, x2))
+```
 
 # Applied exercises
 
