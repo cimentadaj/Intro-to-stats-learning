@@ -80,6 +80,43 @@ summary(mod1)$r.squared # compare to this
 
 In the third video we talk about multiple regression and how it would be ideal if all predictors are uncorrelated. That would mean that it is not important to include them in a model simply because the estimates will not change if they're being controlled for.
 
+```{r}
+n <- 100
+x1 <- rnorm(n, 5)
+x2 <- rnorm(n, 10)
 
+a = 3
+b1 = 2
+b2 = 7
+e <- rnorm(n)
 
-Another point is when the model contains two predictors which are correlated. In reality coefficients change together, but when we model them we say that each one is fixed in the estimation of the other. That doesn't reflect reality.
+y = a + b1 * x1 + b2 * x2 + e
+
+display(lm(y ~ x1), detail = T) # un correlated models
+display(lm(y ~ x1 + x2), detail = T) # un correlated models
+# Coefficients hardly change
+
+# Let's redefine:
+x1 <- rnorm(n, 5)
+x2 <- x1 * rnorm(n, 10)
+y = a + b1 * x1 + b2 * x2 + e
+
+display(lm(y ~ x1), detail = T) # correlated models
+# See the biased coefficient?
+
+display(lm(y ~ x1 + x2), detail = T) # correlated models
+# See how it comes down?
+
+# Those are the perils of correlated coefficients
+```
+But besides this problem, there's another thing: holding fixed other coefficients does not resemble reality. In the third video they talk about an example that exemplifies the problem pretty well. Suppose that Y is the change you have in your pocket, x1 is the number of coins and x2 is the number of pennies. x1 and x2 are inherently correlated.
+
+```{r}
+coins = 1:10
+pennies = c(0, rep(1, 9))
+cor(coins, pennies) # the more coins, the more pennies, obviously.
+
+change = coins * pennies * rnorm(10, sd = 100) # change is the combination of coins and pennies
+display(lm(change ~ coins + pennies))
+```
+Here we say that holding the # of pennies constant, an increase in coins yields more change. But in practice when coins increase, pennies almost ALWAYS increase. So be careful in interpreting this: this only means that regardless of the amount of pennies, the more coins the more change you have.
