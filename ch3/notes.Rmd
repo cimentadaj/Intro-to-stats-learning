@@ -1,0 +1,85 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Notes
+
+Introduction to linear regression.
+
+Linear regression looks to estimate a linear relationship between a response variable and one or more predictors. It is estiamted through a method called least squares which I will explain in detail below.
+
+```{r}
+library(arm)
+
+set.seed(1)
+n = 100
+a = 2
+b1 = 5
+x1 = rnorm(n, 5, sd = 0.2)
+epsilon <- rnorm(n)
+
+y = a + b1 * x1 + epsilon
+
+mod1 <- lm(y ~ x1)
+display(mod1, detail = T)
+plot(x1, y)
+abline(a = 1.99, b = 4.99, col = "blue", lwd = 2)
+segments(x1, y, x1, predict(mod1), col = "red")
+```
+
+These are the smallest deviations from the prediction that conforms a regression line. We estimate these deviations be subtracting each point from the predicted value. To estimate the residual some of squares or RSS, we take each of this deviations and add them all together. As you can see, some of these deviations will be negative like for example the first point in roughly the coordinates [4.5, 24.7]. For that we squared all deviations and add them together. Let's give it a try:
+```{r}
+yhat = predict(mod1) # predicted values
+RSS = sum((y - yhat)^2) # the difference from the predicted values and the actual values
+all.equal(RSS, sum((mod1$residuals)^2)) # comparing our calculations from the model estimations
+```
+There you go, our estimations are correct.
+
+We can estimate other parameters from the linear regression manually. For example, the regression coefficient. The formula is outlined as the correlation between x and y divided by the standard deviation between y and x.
+
+```{r}
+ourbeta <- (cor(y, x1) * sd(y)/sd(x1))
+all.equal(ourbeta, unname(coef(mod1)[2]))
+```
+Also, correct. Let's move to the standard error:
+
+```{r}
+e <- sqrt(sum(mod1$residuals^2)/ (length(y) - 2)) # This is the residual standard deviation
+ssx <- sum((x1 - mean(x1))^2) # And these are the sum of deviations from the mean of x
+
+# Divide them both while taking the sqrt of ssx and you get the SE.
+se <- e/sqrt(ssx); se
+display(mod1) # compare
+
+```
+After this, confidence intervals are pretty straight forward.
+
+```{r}
+upper <- b1 + 2 * se; upper
+lower <- b1 - 2 * se; lower
+
+confint(mod1)
+# I don't know why they don't round up to the exact numbers.
+
+# Also the t statistic
+b1/se
+```
+
+The second video talked about how to compute the R squared and how to do hypothesis testing. What specifically tests the hypothesis testing and how it's related to the confidence intervals.
+
+How do we compute the R squared? It's pretty straight forward. Its the total variance explained divided by the total variance. It can be interpreted as the % of variance that is explained out of the total amount of variance. It measured the strength of the relationship between the predictors and the response variable. Don't confuse this with statistical significance. Statistical significance means that the predictor is different from zero and not that there's a sizable effect or that there's a strong relationship.
+
+```{r}
+total_var = sum((y - mean(y))^2) # total variance in y
+var_not_explained = sum((y - yhat)^2) # total variance not explained (deviations of y from predictions)
+
+1 - (var_not_explained/total_var) # divide them and we get the % of variance NOT explained. subtract a 1 and get the % of variance explained
+summary(mod1)$r.squared # compare to this
+```
+
+In the third video we talk about multiple regression and how it would be ideal if all predictors are uncorrelated. That would mean that it is not important to include them in a model simply because the estimates will not change if they're being controlled for.
+
+
+
+Another point is when the model contains two predictors which are correlated. In reality coefficients change together, but when we model them we say that each one is fixed in the estimation of the other. That doesn't reflect reality.
