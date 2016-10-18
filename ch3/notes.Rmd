@@ -120,3 +120,23 @@ change = coins * pennies * rnorm(10, sd = 100) # change is the combination of co
 display(lm(change ~ coins + pennies))
 ```
 Here we say that holding the # of pennies constant, an increase in coins yields more change. But in practice when coins increase, pennies almost ALWAYS increase. So be careful in interpreting this: this only means that regardless of the amount of pennies, the more coins the more change you have.
+
+In the fourth video they begin by positing four questions related to the usefulness of regression models. First, they ask whether the model is useful in explaining a certain response variable. For that we use the F statistic. Why the F statistic and not look at the significance levels of each variable? Because under the 95% threshold, some variables might be significant simply due to chance. For example, when you ahve 100 predictors, just by chance we expect 5 of them to be signifianct when they're actually not! The F statistics accounts for that as it adjusts for the number predictors in the model.
+
+The F statistic can be calculated as
+
+```{r}
+mod1 <- lm(y ~ x1)
+TSS <- sum((y - mean(y))^2) # total sum of squares or total variance
+RSS <- sum((y - predict(mod1))^2)
+p <- 1 # number of predictors
+n <- length(y)
+
+f_stat <- ((TSS - RSS) / p) / (RSS/(n - p - 1))
+all.equal(f_stat, unname(summary(mod1)$fstatistic[1]))
+```
+A problem with regression is knowing which variables to pick. In social sciences this is often no a problem because theory plays a small role but when dealing with massive data sets, variables are all correlated and are difficult to identify as important. That's where we use a method called forward selection. We start with a null model. Then we fit p models, each one with a response and a p variable. From all these models we pick the one with the less RSS, so the one that better explains the response. We include that p in the null model and being the process again with the remaining p variables. 
+
+The algorithm will stop whenever a certain threshold has been met, like for example when the remaining variables are all insignificant or simply when the RSS is below or above an arbitrary threshold.
+
+Another method is the backward selection. Contrary to the forward selection, you start with a model with all p variables. The model excludes the variable with the highest p value and refits the model without this variable. It continues to do so until a threshold is met, as with the forward selection.
