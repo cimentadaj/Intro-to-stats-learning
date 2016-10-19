@@ -1,0 +1,93 @@
+---
+title: "Exercises conceptual"
+output: html_notebook
+---
+
+
+
+1.
+The null hypothesis is testing whether the effect of TV, radio and newspaper is different from zero. That is, of course, separately for each predictor. TV an radio seem to be significant predictors as they're coefficients are different from zero. However, this says nothing about the strength of the relationship. TV seems to have an significant relationship but in terms of magnitud it's really weak. In contrast, radio does have a significant and strong relationship, at least compared to TV. Newspaper, on the other hand,  has no apparent relationship when taking into account TV and radio advertising. It looks like whenever we have our three advertising mediums together, the one that predicts sales the most is radio.
+
+2.
+The fundamental different between KNN classifier and KKN regression is that the first has a qualitative dependent variable and the second one has a numeric depenent variable. In the first one the classification of a unit is assigned based on the classification of the neighbors whereas in linear regression the predicted yhat values is made based on the average of y values in every position of x
+
+3.
+(a) This is an empirical question, so let's test it:
+```{r}
+# training data
+x <- rnorm(100)
+y <- x + rnorm(100, sd = 0.5)
+
+summary(lm(y[1:20] ~ x[1:20]))$sigma
+summary(lm(y[1:20] ~ x[1:20] + I(x[1:20]^3)))$sigma
+```
+
+The RSE is not consistent if you ran the same command several times. Sometimes the RSE from the cubic model is higher and sometimes its smaller. There's not enough information to tell. First, we're only sampling 20 points which depending on the random draw from the `rnorm` can be with a stronger or weaker linear relationship. For that matter, any consecutive resampling can show biased RSE.
+
+(b)
+With the test data the results are more consistent simply because the N is higher.
+```{r}
+# test data
+summary(lm(y[20:100] ~ x[20:100]))$sigma
+summary(lm(y[20:100] ~ x[20:100] + I(x[20:100]^3)))$sigma
+```
+But if we sample the same N it is also equally likely that the RSE is higher or smalle on either side.
+```{r}
+x <- rnorm(100)
+y <- x + rnorm(100, sd = 0.5)
+summary(lm(y[1:50] ~ x[1:50]))$sigma
+summary(lm(y[50:100] ~ x[50:100]))$sigma
+```
+Run this enough times and you'll see that the RSE is higher in some models that in the others. But what if we randomly sampled some observations?
+
+```{r}
+x <- rnorm(100)
+y <- x + rnorm(100, sd = 0.5)
+s1 <- sample(1:100, 50)
+
+# training
+summary(lm(y[s1] ~ x[s1]))$sigma
+summary(lm(y[s1] ~ x[s1] + I(x[s1]^3)))$sigma
+
+# test
+summary(lm(y[setdiff(1:100, s1)] ~ x[setdiff(1:100, s1)]))$sigma
+summary(lm(y[setdiff(1:100, s1)] ~ x[setdiff(1:100, s1)] + I(x[s1]^3)))$sigma
+
+# resampling
+n <- rep(NA, 100)
+p <- rep(NA, 100)
+
+for(i in 1:1000) {
+  x <- rnorm(100)
+  y <- x + rnorm(100, sd = 0.5)
+  s1 <- sample(1:100, 50)
+  n[i] <- summary(lm(y[setdiff(1:100, s1)] ~ x[setdiff(1:100, s1)]))$sigma
+  p[i] <- summary(lm(y[setdiff(1:100, s1)] ~ x[setdiff(1:100, s1)] + I(x[s1]^3)))$sigma
+}
+
+mean(p)
+mean(n)
+```
+When random sampling you'll have the same chances of getting the same results in both data sets. And in the cubic equations, because it takes degrees of freedom and doesn't add anything to the linear relationship should be higher than the linear model alone. However, there can be differences under repeated sampling but purely due to noise and significant.
+
+(c).
+What if the true relationship is non-linear but we don't know how fat it's from linearity
+```{r}
+x <- rnorm(100)
+y <- x + x^sample(c(2,3), 1) + rnorm(100, sd = 0.5)
+
+s1 <- sample(1:20, 20, replace = T)
+# training
+summary(lm(y[s1] ~ x[s1]))$sigma
+summary(lm(y[s1] ~ x[s1] + I(x[s1]^3)))$sigma
+```
+Regardless of how many times you run this, the RSE of the cubic model is always smaller than the one without it. Let's try with the test data.
+
+(d)
+```{r}
+s1 <- sample(1:80, 80, replace = T)
+# test
+summary(lm(y[s1] ~ x[s1]))$sigma
+summary(lm(y[s1] ~ x[s1] + I(x[s1]^3)))$sigma
+```
+In the test data is almost always smaller but much closer than in the training data.

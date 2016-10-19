@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Notes"
 output: html_notebook
 ---
 
@@ -140,3 +140,25 @@ A problem with regression is knowing which variables to pick. In social sciences
 The algorithm will stop whenever a certain threshold has been met, like for example when the remaining variables are all insignificant or simply when the RSS is below or above an arbitrary threshold.
 
 Another method is the backward selection. Contrary to the forward selection, you start with a model with all p variables. The model excludes the variable with the highest p value and refits the model without this variable. It continues to do so until a threshold is met, as with the forward selection.
+
+The application of these algorithms will be seen in next chapters.
+
+Up next the discuss how to interpret dummy variables:
+```{r}
+set.seed(4)
+height <- rnorm(100, 5, sd = 0.5)
+male <- rbinom(100, 1, ifelse(height > 5.5, 0.8, 0.1))
+
+display(lm(height ~ male), detail = T)
+
+```
+
+This shows, in simple terms, that males have a heigh of about .52 higher than women, which is about 4.93. When more categories are included the results are interpreted the same way: always in reference to the intercept which is the baseline category.
+
+Interactions and Non-linearities
+
+```{r}
+Adv <- read.csv("http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv", header = T)
+```
+
+
