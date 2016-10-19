@@ -15,9 +15,9 @@ The fundamental different between KNN classifier and KKN regression is that the 
 (a) This is an empirical question, so let's test it:
 ```{r}
 # training data
+
 x <- rnorm(100)
 y <- x + rnorm(100, sd = 0.5)
-
 summary(lm(y[1:20] ~ x[1:20]))$sigma
 summary(lm(y[1:20] ~ x[1:20] + I(x[1:20]^3)))$sigma
 ```
@@ -35,8 +35,8 @@ But if we sample the same N it is also equally likely that the RSE is higher or 
 ```{r}
 x <- rnorm(100)
 y <- x + rnorm(100, sd = 0.5)
-summary(lm(y[1:50] ~ x[1:50]))$sigma
-summary(lm(y[50:100] ~ x[50:100]))$sigma
+summary(lm(y[1:50] ~ x[1:50]))$sigma # training
+summary(lm(y[50:100] ~ x[50:100]))$sigma # test
 ```
 Run this enough times and you'll see that the RSE is higher in some models that in the others. But what if we randomly sampled some observations?
 
@@ -68,7 +68,7 @@ for(i in 1:1000) {
 mean(p)
 mean(n)
 ```
-When random sampling you'll have the same chances of getting the same results in both data sets. And in the cubic equations, because it takes degrees of freedom and doesn't add anything to the linear relationship should be higher than the linear model alone. However, there can be differences under repeated sampling but purely due to noise and significant.
+When random sampling you'll have the same chances of getting the same results in both data sets. And in the cubic equations, because it takes degrees of freedom and doesn't add anything to the linear relationship should be higher than the linear model alone. However, there can be differences under repeated sampling but purely due to noise.
 
 (c).
 What if the true relationship is non-linear but we don't know how fat it's from linearity
@@ -81,7 +81,7 @@ s1 <- sample(1:20, 20, replace = T)
 summary(lm(y[s1] ~ x[s1]))$sigma
 summary(lm(y[s1] ~ x[s1] + I(x[s1]^3)))$sigma
 ```
-Regardless of how many times you run this, the RSE of the cubic model is always smaller than the one without it. Let's try with the test data.
+Regardless of how many times you run this, the RSE of the cubic model is always smaller than the one without it. That's because with the cubic term we have more flexibility in fitting the model. On the contrary, we'll have more variability in the terms but less bias. Let's try with the test data.
 
 (d)
 ```{r}
@@ -90,4 +90,4 @@ s1 <- sample(1:80, 80, replace = T)
 summary(lm(y[s1] ~ x[s1]))$sigma
 summary(lm(y[s1] ~ x[s1] + I(x[s1]^3)))$sigma
 ```
-In the test data is almost always smaller but much closer than in the training data.
+In the test data is almost always smaller but much closer than in the training data, suggesting that on average the RSE is higher for the test data.
