@@ -5,14 +5,121 @@ output: html_notebook
 
 # Applied
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+8.
+(a)
 
 ```{r}
-plot(cars)
+library(ISLR)
+mod1 <- lm(mpg ~ horsepower, Auto)
+summary(mod1)
+```
+i. There is a significant relationship. That is, the relationship is different from 0.
+
+ii. For a one unit increase in horsepower the expected miles per gallon decreases by about 0.15. In addition, the R squared is of 60% suggesting that the horsepower explains mpg quite well.
+
+iii. negative
+
+iv.
+```{r}
+predict(mod1, newdata = data.frame(horsepower = 98))
+# 24.46 mpg
+
+# prediction and confidence interval
+upper <- summary(mod1)$coef[, 1] + 1.96 * summary(mod1)$coef[, 2]
+lower <- summary(mod1)$coef[, 1] - 1.96 * summary(mod1)$coef[, 2]
+
+cbind(lower, upper)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+(b)
+```{r}
+with(Auto, plot(mpg ~ horsepower)); abline(mod1, col = "red")
+```
+(c)
+```{r}
+plot(mod1)
+```
+Only two significant outliers, perhaps rerunning without those two outliers would be informative. The residuals are not entirely normally distributed but nothing really dramatic. The most worrisome thing is the residuals vs fitted values as there seems to be a clearn pattern. As fitted values increase the residual decrease. But after a certain threshold it starts to increase.
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+9.
+(a)
+```{r}
+plot(Auto)
+```
+
+(b)
+```{r}
+cor(Auto[!(names(Auto) %in% "name")])
+```
+
+(c)
+```{r}
+mod2 <- lm(mpg ~ . -name, Auto)
+summary(mod2)
+```
+
+i. Yes as the F statistic is significant suggesting that At least ONE predictord is significantly related to mpg. Some predictors, however, don't have a significant relationship while others do.
+
+ii. `displacement`, `weight`, `year` and `origin`.
+
+iii. That as the years increase, the mpg is increasing by about 0.75.
+
+(d)
+```{r}
+plot(mod2)
+```
+The outlier plot suggests there is an outlier present, namely row 14, and its leverage is quite high. The residuals vs fitted is less severe than as before, but still it shows a pattern that as fitted values increase residuals become more dispersed. The residuals seem to be more normal than before.
+
+(e)
+```{r}
+summary(lm(mpg ~ origin*cylinders + year*weight, Auto))
+```
+Yes, for example year and weight shows a significant interaction.
+
+(f)
+```{r}
+summary(lm(mpg ~ I(log(horsepower)) + weight + I(weight^2), Auto))
+```
+
+10.
+(a)
+```{r}
+mod3 <- lm(Sales ~ Price + Urban + US, Carseats)
+```
+
+(b)
+```{r}
+summary(mod3)$coef
+```
+As Price increases, sales go down. Urban has about -0.02 less sales than rural and US has about 1.20 more sales than it's counterpart.
+
+(c)
+`y = b0 + Price * -0.054 + Urban(Yes) * -0.02 + US(Yes) * 1.20`
+
+(d)
+For all except Urban.
+
+(e)
+```{r}
+mod4 <- lm(Sales ~ Price + US, Carseats)
+summary(mod4)$coef
+```
+
+```{r}
+summary(mod3)$r.sq
+summary(mod4)$r.sq
+# They're practically the same. Let's test it formally with an anove test
+
+anova(mod4, mod3)
+
+The additional covariate doesn't add anything to the model.
+```
+
+```{r}
+upper <- summary(mod4)$coef[, 1] + 1.96 * summary(mod4)$coef[, 2]
+lower <- summary(mod4)$coef[, 1] - 1.96 * summary(mod4)$coef[, 2]
+
+cbind(lower, upper)
+
+
+```
