@@ -105,6 +105,7 @@ mod4 <- lm(Sales ~ Price + US, Carseats)
 summary(mod4)$coef
 ```
 
+(f)
 ```{r}
 summary(mod3)$r.sq
 summary(mod4)$r.sq
@@ -115,11 +116,57 @@ anova(mod4, mod3)
 The additional covariate doesn't add anything to the model.
 ```
 
+(g)
 ```{r}
 upper <- summary(mod4)$coef[, 1] + 1.96 * summary(mod4)$coef[, 2]
 lower <- summary(mod4)$coef[, 1] - 1.96 * summary(mod4)$coef[, 2]
 
 cbind(lower, upper)
+```
 
+(h)
+```{r}
+plot(mod4)
+```
+There are some small outliers but nothing dramatic in terms of leverage, at least marked by the plot. Although one could exclude the highest point on the right part of the plot just to confirm.
+
+11.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+y <- 2 * x + rnorm(100)
+```
+
+(a)
+```{r}
+mod5 <- lm(y ~ x - 1)
+summary(mod5)$coef
+```
+It seems that the estimated increase is different from zero because the standard error `0.11 * 1.96 == 0.21` and that `+/-` 2.1 doesn't include a zero.
+
+(b)
+```{r}
+mod6 <- lm(x ~ y - 1)
+summary(mod6)$coef
+```
+Same t statistic and p value but different estimate and standard error. 
+
+(c)
+The estimates and therefore the SE's are different because substantively you're predicting another thing. But in terms of significance the relationship being tested is exactly the same; whether on predicts or not the other.
+
+(d)
+```{r}
+(sqrt(length(y) - 1)) * sum(x * y) / sqrt(sum(x^2) * sum(y^2) - sum(x * y)^2) # is the same as:
+summary(mod6)$coef[, 3]
+```
+(e)
+Every calculation done in (d) is either addition or multiplication involving x and y. If you swap the places, the result is not changed, so the t value is the same for both.
+
+(f)
+```{r}
+summary(lm(y ~ x))$coef[ , 3, drop = F]
+summary(lm(x ~ y))$coef[ , 3, drop = F]
+# Exactly the same.
 
 ```
