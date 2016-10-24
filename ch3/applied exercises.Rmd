@@ -170,3 +170,158 @@ summary(lm(x ~ y))$coef[ , 3, drop = F]
 # Exactly the same.
 
 ```
+
+12.
+(a)
+
+The condition happens whe the sum of squares of x and y are equal. In other terms, when both variables are exactly the same, in terms of addition.
+
+(b)
+```{r}
+x <- rnorm(100)
+y <- rnorm(100)
+
+coef(lm(y ~ x))
+coef(lm(x ~ y))
+```
+
+(c)
+```{r}
+x <- rnorm(100)
+y <- -sample(x, 100)
+
+coef(lm(y ~ x - 1))
+coef(lm(x ~ y - 1))
+```
+
+13.
+(a)
+```{r}
+set.seed(1)
+
+x <- rnorm(100)
+```
+
+(b)
+```{r}
+eps <- rnorm(100, 0, 0.25)
+```
+
+(c)
+```{r}
+y <- -1 + 0.5*x + eps
+length(y)
+# b0 = -1 and b1 == 0.5
+```
+
+(d)
+```{r}
+plot(x, y)
+```
+There'sa fairly linear relationship, as it would be expected from the formula of y.
+
+(e)
+```{r}
+mod1 <- lm(y ~ x)
+summary(mod1)
+```
+The coefficients are practically the same. In fact a difference between the two would be probably be insignificant.
+
+(f)
+```{r}
+plot(x, y)
+abline(lm(y ~ x))
+```
+
+(g)
+```{r}
+summary(lm(y ~ poly(x, 2)))
+```
+The adjusted R2 slightly increased and the RSE slightly decreased meaning that the term improved the model. Despite this, the term is insignificant.
+
+(h)
+```{r}
+set.seed(1)
+x <- rnorm(100)
+eps <- rnorm(100, 0, 0.12)
+y <- -1 + 0.5*x + eps
+mod2 <- lm(y ~ x)
+summary(mod2)
+```
+
+The estimation suggests that the model is explained prettly well. This is evident given that y is a function of X and epsilon, which has NO variation at all.
+
+(i)
+```{r}
+set.seed(1)
+x <- rnorm(100)
+eps <- rnorm(100, 0, 0.50)
+y <- -1 + 0.5*x + eps
+mod3 <- lm(y ~ x)
+summary(mod3)
+```
+
+The same model with more variation naturally has less explained variance. The adjusted R2 is smaller and the RSE is higher.
+
+(j)
+```{r}
+confint(mod1)
+confint(mod2)
+confint(mod3)
+```
+The second model, the one with the less unexplained variance, has the smallest CI's, followed the by the third model, the one with the highest variance unexplained, with the biggest CI's. For the first model the size of the CI's are in between the 2nd and 3rd model. Everything as expected.
+
+14.
+(a)
+```{r}
+set.seed(1)
+x1 <- runif(100)
+x2 <- 0.5 * x1 + rnorm(100)/100
+y <- 2 + 2 * x1 + 0.3 * x2 + rnorm(100, sd = 1)
+coef(lm(y ~ x1 + x2))
+```
+The coefficients are b0 = 2.1 (similar yo the 2 in the function form), b1 = -1.75(far away from the 2 in the functional form) and b2  = 7.39(highly overestimated from the 0.3 in the functional form)
+
+(b)
+```{r}
+cor(x1, x2)
+plot(x1, x2)
+abline(lm(x2 ~ x1))
+```
+
+(c)
+```{r}
+summary(lm(y ~ x1 + x2))
+```
+These coefficients are pretty far from the true coefficients. One telling thing from the output is that both coefficients have a reasonable size but their SE's are huge. This means that both coefficients are insignificantly different from 0.
+
+(d)
+```{r}
+summary(lm(y ~ x1))
+```
+The results are highly significant and pretty close to the true coefficient
+
+(e)
+```{r}
+summary(lm(y ~ x2))
+```
+This one the coefficient is highly overestimated but it's still significant.
+
+(f)
+The results do contradict each other because separetely they are significant but when pooled together insignificant. This contradiction is a clue in understanding that there's something the is increasing their standard errors.
+
+(g)
+```{r}
+x1 <- c(x1, 0.1)
+x2 <- c(x2, 0.8)
+y <- c(y, 6)
+
+summary(lm(y ~ x1 +  x2))
+```
+From the histograms of each variables x2 seemed like the one where the point would have the biggest leverage. In fact, the coefficient increased by a lot. On the other variable it didn't have an important effect. We can look at it's importance by plotting the distribution.
+```{r}
+hist(x1)
+```
+Adding a `1` did not disturb the more or less 'uniform' distribution.
+
+15.
